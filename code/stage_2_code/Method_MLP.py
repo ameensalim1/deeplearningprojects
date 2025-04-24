@@ -23,6 +23,9 @@ class Method_MLP(method, nn.Module):
     n_features = None
     n_classes = None
 
+    train_losses: list
+    test_accs: list
+
     # it defines the the MLP model architecture, e.g.,
     # how many layers, size of variables in each layer, activation function, etc.
     # the size of the input/output portal of the model architecture should be consistent with our data input and desired output
@@ -31,6 +34,8 @@ class Method_MLP(method, nn.Module):
         method.__init__(self, mName, mDescription)
         nn.Module.__init__(self)
         # Store dimensions
+        self.train_losses = []
+        self.test_accs = []
         self.n_features = n_features
         self.n_classes = n_classes
         # Define layers dynamically
@@ -86,7 +91,8 @@ class Method_MLP(method, nn.Module):
             y_true = y_tensor
             # calculate the training loss
             train_loss = loss_function(y_pred, y_true)
-
+            # record training loss
+            self.train_losses.append(train_loss.item())
             # check here for the gradient init doc: https://pytorch.org/docs/stable/generated/torch.optim.Optimizer.zero_grad.html
             optimizer.zero_grad()
             # check here for the loss.backward doc: https://pytorch.org/docs/stable/generated/torch.Tensor.backward.html
@@ -97,8 +103,15 @@ class Method_MLP(method, nn.Module):
             optimizer.step()
 
             if epoch%100 == 0:
-                accuracy_evaluator.data = {'true_y': y_true, 'pred_y': y_pred.max(1)[1]}
-                accuracy = accuracy_evaluator.evaluate()
+                # accuracy_evaluator.data = {'true_y': y_true, 'pred_y': y_pred.max(1)[1]}
+                # accuracy = accuracy_evaluator.evaluate()
+                accuracy_evaluator.data = {
+                    'true_y': y_true,
+                    'pred_y': y_pred.max(1)[1].numpy()
+                }
+                eval_dict = accuracy_evaluator.evaluate()
+                accuracy = eval_dict['accuracy']
+                self.test_accs.append(accuracy)
                 # Calculate other metrics
                 # Convert tensors to numpy for sklearn metrics
                 y_true_np = y_true.numpy()

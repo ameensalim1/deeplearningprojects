@@ -13,7 +13,7 @@ from typing import Dict, Optional, Any # Added for type hinting
 
 class Dataset_Loader(dataset):
     data: Optional[Dict[str, Optional[Dict[str, Any]]]] = None # More specific type hint
-    dataset_source_folder_path: str = '/Users/ameensalim/ECS189G/project/ECS189G_Winter_2022_Source_Code_Template/data/stage_2_data/'
+    dataset_source_folder_path: str = 'data/stage_2_data'
     dataset_source_train_file_name: str = 'train.csv'
     dataset_source_test_file_name: str = 'test.csv'
 

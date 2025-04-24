@@ -9,6 +9,7 @@ from code.base_class.setting import setting
 # Removed train_test_split import
 import numpy as np
 from typing import Tuple, Optional, Dict, Any # Added for type hints
+import matplotlib.pyplot as plt
 
 class Setting_Train_Test_Split(setting):
     # Removed fold attribute as it's not used for train/test split scenario
@@ -59,11 +60,20 @@ class Setting_Train_Test_Split(setting):
         # self.result.fold_count is not set as we are not using KFold
         self.result.save()
 
-        # Evaluate
-        print("--- Evaluating results ---")
         self.evaluate.data = learned_result
-        eval_score = self.evaluate.evaluate()
-        print(f"--- Evaluation score: {eval_score} ---")
+        
+        scores: Dict[str, float] = self.evaluate.evaluate()
 
-        # Return evaluation score (std deviation is None for simple train/test)
-        return eval_score, None
+        plt.figure()
+        plt.plot(self.method.train_losses, label="Train loss")
+        plt.xlabel("Epoch"); plt.ylabel("Loss")
+        plt.legend()
+        plt.savefig("train_loss.png")
+
+        plt.figure()
+        plt.plot(self.method.test_accs, label="Test accuracy")
+        plt.xlabel("Epoch"); plt.ylabel("Accuracy")
+        plt.legend()
+        plt.savefig("test_acc.png")
+
+        return scores

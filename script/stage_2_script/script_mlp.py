@@ -16,7 +16,7 @@ if __name__ == '__main__':
 
     # ---- Data loading and inspection ---------------------
     print("--- Loading Data ---")
-    data_obj = Dataset_Loader('Stage 2 Data', '')
+    data_obj = Dataset_Loader('Stage 2 Data', 'Loads train/test CSVs') 
     # Updated path for Stage 2 data - Correct relative path from project root
     data_obj.dataset_source_folder_path = 'data/stage_2_data/'
     loaded_data = data_obj.load()
@@ -44,14 +44,14 @@ if __name__ == '__main__':
     # ------------------------------------------------------
 
     # ---- Method, Result, Evaluate object initialization ----
-    method_obj = Method_MLP('multi-layer perceptron', '', n_features, n_classes)
+    method_obj   = Method_MLP("MLP", "Pytorch Classifier", n_features, n_classes)
 
     result_obj = Result_Saver('saver', '')
     # Updated path for Stage 2 results - Correct relative path from project root
     result_obj.result_destination_folder_path = 'result/stage_2_result/MLP_'
     result_obj.result_destination_file_name = 'prediction_result'
 
-    evaluate_obj = Evaluate_Accuracy('accuracy', '')
+    evaluate_obj = Evaluate_Accuracy() 
     # ------------------------------------------------------
 
     # ---- Setting initialization --------------------------
@@ -64,13 +64,20 @@ if __name__ == '__main__':
     setting_obj.method = method_obj
     setting_obj.result = result_obj
     setting_obj.evaluate = evaluate_obj
-
-    eval_score, _ = setting_obj.load_run_save_evaluate()
+    accuracy = setting_obj.load_run_save_evaluate()
 
     print('************ Overall Performance ************')
-    if eval_score is not None:
-        print(f'MLP Accuracy: {eval_score:.4f}')
-    else:
-        print('MLP Execution failed.')
-    print('************ Finish ************')
+
+
+    for metric, value in accuracy.items():
+        print(f"{metric}: {value:.4f}")
+
+    # if scores:
+
+        # for metric, value in scores.items():
+            # print(f"{metric}: {value:.4f}")
+
+    # else:
+        # print('MLP Execution failed.')
+    # print('************ Finish ************')
     # ------------------------------------------------------
