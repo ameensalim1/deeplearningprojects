@@ -31,22 +31,63 @@ class Method_MLP(method, nn.Module):
     # the size of the input/output portal of the model architecture should be consistent with our data input and desired output
     # Modified __init__ to accept n_features and n_classes
     def __init__(self, mName, mDescription, n_features, n_classes):
+
+    def __init__(
+        self,
+        mName,
+        mDescription,
+        n_features,
+        n_classes,
+        hidden_dims=(784, 256, 128),
+        activation=nn.ReLU,
+        dropout=0.3,
+        optimizer_cls=torch.optim.Adam,
+        optimizer_kwargs=None,
+        loss_fn=None
+    ):     
         method.__init__(self, mName, mDescription)
         nn.Module.__init__(self)
         # Store dimensions
-        self.train_losses = []
-        self.test_accs = []
-        self.n_features = n_features
-        self.n_classes = n_classes
+        # self.train_losses = []
+        # self.test_accs = []
+        # self.n_features = n_features
+        # self.n_classes = n_classes
         # Define layers dynamically
         # check here for nn.Linear doc: https://pytorch.org/docs/stable/generated/torch.nn.Linear.html
-        self.fc_layer_1 = nn.Linear(self.n_features, self.n_features * 2) # Example: Hidden layer size = 2 * features
+        # self.fc_layer_1 = nn.Linear(self.n_features, self.n_features * 2) # Example: Hidden layer size = 2 * features
         # check here for nn.ReLU doc: https://pytorch.org/docs/stable/generated/torch.nn.ReLU.html
-        self.activation_func_1 = nn.ReLU()
-        self.fc_layer_2 = nn.Linear(self.n_features * 2, self.n_classes) # Output layer size = n_classes
+        # self.activation_func_1 = nn.ReLU()
+        # self.fc_layer_2 = nn.Linear(self.n_features * 2, self.n_classes) # Output layer size = n_classes
         # check here for nn.Softmax doc: https://pytorch.org/docs/stable/generated/torch.nn.Softmax.html
         # Using LogSoftmax + NLLLoss is often more numerically stable than Softmax + CrossEntropyLoss
-        self.activation_func_2 = nn.LogSoftmax(dim=1)
+        # self.activation_func_2 = nn.LogSoftmax(dim=1)
+
+        self.n_features      = n_features
+        self.n_classes       = n_classes
+        self.hidden_dims     = hidden_dims
+        self.activation_cls  = activation
+        self.dropout_prob    = dropout
+        self.optimizer_cls   = optimizer_cls
+        self.optimizer_kwargs= optimizer_kwargs or {"lr": self.learning_rate}
+        self.loss_fn         = loss_fn or nn.CrossEntropyLoss()
+
+        # history
+        self.train_losses = []
+        self.test_accs    = []
+
+        # Build layers from hidden_dims list
+        layers = []
+        prev = in_dim = n_features
+        for h in hidden_dims:
+            layers += [
+                nn.Linear(prev, h),
+                nn.BatchNorm1d(h),
+                activation(),
+                nn.Dropout(dropout)
+            ]
+            prev = h
+        layers += [nn.Linear(prev, n_classes)]  # last linear → logits
+        self.net = nn.Sequential(*layers)
 
     # it defines the forward propagation function for input x
     # this function will calculate the output layer by layer
@@ -67,10 +108,8 @@ class Method_MLP(method, nn.Module):
 
     def train(self, X, y):
         # check here for the torch.optim doc: https://pytorch.org/docs/stable/optim.html
-        optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate)
-        # check here for the nn.CrossEntropyLoss doc: https://pytorch.org/docs/stable/generated/torch.nn.CrossEntropyLoss.html
-        # Using NLLLoss with LogSoftmax output
-        loss_function = nn.NLLLoss()
+        optimizer = self.optimizer_cls(self.parameters(), **self.optimizer_kwargs)
+        loss_function = self.loss_fn
         # for training accuracy investigation purpose
         accuracy_evaluator = Evaluate_Accuracy('training evaluator', '')
 

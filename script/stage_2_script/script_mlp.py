@@ -6,6 +6,8 @@ from code.stage_2_code.Evaluate_Accuracy import Evaluate_Accuracy
 import numpy as np
 import torch
 import pandas as pd
+import torch.nn as nn
+import torch.optim as optim
 
 #---- Multi-Layer Perceptron script ----
 if __name__ == '__main__':
@@ -44,7 +46,16 @@ if __name__ == '__main__':
     # ------------------------------------------------------
 
     # ---- Method, Result, Evaluate object initialization ----
-    method_obj   = Method_MLP("MLP", "Pytorch Classifier", n_features, n_classes)
+    method_obj = Method_MLP(
+        "MLP", "Pytorch Classifier",
+        n_features, n_classes,
+        hidden_dims      = (512, 256, 128),
+        activation       = nn.SiLU,
+        dropout          = 0.4,
+        optimizer_cls    = optim.AdamW,
+        optimizer_kwargs = {"lr": 1e-3, "weight_decay": 1e-4},
+        loss_fn          = nn.CrossEntropyLoss()
+    )
 
     result_obj = Result_Saver('saver', '')
     # Updated path for Stage 2 results - Correct relative path from project root
@@ -71,6 +82,25 @@ if __name__ == '__main__':
 
     for metric, value in accuracy.items():
         print(f"{metric}: {value:.4f}")
+
+
+    configs = [
+        {"hidden_dims":(512,256,128),"activation":nn.ReLU,  "dropout":0.3, "optimizer_cls":optim.Adam},
+        {"hidden_dims":(512,256,128),"activation":nn.SiLU,  "dropout":0.4, "optimizer_cls":optim.AdamW},
+        {"hidden_dims":(256,128),      "activation":nn.ReLU,  "dropout":0.5, "optimizer_cls":optim.SGD, "optimizer_kwargs":{"lr":1e-2,"momentum":0.9}},
+    ]
+
+    results = []
+    for cfg in configs:
+        method = Method_MLP("MLP", "tunable MLP", n_features, n_classes, **cfg)
+        setting_obj.method = method
+        scores = setting_obj.load_run_save_evaluate()
+        results.append({**cfg, **scores})
+
+    import pandas as pd
+    df = pd.DataFrame(results)
+    print(df.to_markdown(index=False))
+    df.to_csv("tune_results.csv", index=False)
 
     # if scores:
 
