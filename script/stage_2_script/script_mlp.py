@@ -8,6 +8,7 @@ import torch
 import pandas as pd
 import torch.nn as nn
 import torch.optim as optim
+import matplotlib.pyplot as plt
 
 #---- Multi-Layer Perceptron script ----
 if __name__ == '__main__':
@@ -129,6 +130,8 @@ if __name__ == '__main__':
 
     print("\n************ Architecture Comparison ************")
     results = []
+    histories = []
+    labels    = []
     for i, cfg in enumerate(configs, 1):
         print(f"\n{'='*50}")
         print(f"Training Architecture {i} of {len(configs)}")
@@ -164,6 +167,8 @@ if __name__ == '__main__':
             "Optimizer": cfg['optimizer_cls'].__name__,
             **scores
         })
+        histories.append(method.train_losses)
+        labels.append(f"Arch {i}")
 
     # Create results DataFrame and save
     df = pd.DataFrame(results)
@@ -174,6 +179,16 @@ if __name__ == '__main__':
     pd.set_option('display.width', None)
     print("\n" + df.to_string(index=False))
     
+    #Graph
+    plt.figure()
+    for hist, label in zip(histories, labels):
+        plt.plot(hist, label=label)
+    plt.xlabel("Epoch")
+    plt.ylabel("Train Loss")
+    plt.title("Training Loss vs Epoch for All Architectures")
+    plt.legend()
+    plt.savefig("all_arch_train_loss.png")
+
     # Save results to CSV
     results_path = 'result/stage_2_result/mlp_architecture_comparison.csv'
     df.to_csv(results_path, index=False)
