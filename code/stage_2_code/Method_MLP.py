@@ -30,8 +30,6 @@ class Method_MLP(method, nn.Module):
     # how many layers, size of variables in each layer, activation function, etc.
     # the size of the input/output portal of the model architecture should be consistent with our data input and desired output
     # Modified __init__ to accept n_features and n_classes
-    def __init__(self, mName, mDescription, n_features, n_classes):
-
     def __init__(
         self,
         mName,
@@ -94,14 +92,8 @@ class Method_MLP(method, nn.Module):
 
     def forward(self, x):
         '''Forward propagation'''
-        # hidden layer embeddings
-        h = self.activation_func_1(self.fc_layer_1(x))
-        # outout layer result
-        # self.fc_layer_2(h) will be a nx2 tensor
-        # n (denotes the input instance number): 0th dimension; 2 (denotes the class number): 1st dimension
-        # we do softmax along dim=1 to get the normalized classification probability distributions for each instance
-        y_pred = self.activation_func_2(self.fc_layer_2(h))
-        return y_pred
+        # Use the sequential network defined in __init__
+        return self.net(x)
 
     # backward error propagation will be implemented by pytorch automatically
     # so we don't need to define the error backpropagation function here
