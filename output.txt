@@ -1,0 +1,345 @@
+--- Loading Data ---
+--- Loading Stage 2 Data ---
+Loading training data from: data/stage_2_data/train.csv
+Training data loaded successfully.
+  Features (X_train): (59999, 784)
+  Labels (y_train): (59999,)
+Loading testing data from: data/stage_2_data/test.csv
+Testing data loaded successfully.
+  Features (X_test): (9999, 784)
+  Labels (y_test): (9999,)
+--- Data Loading Complete ---
+Unique labels found in y_train: [0 1 2 3 4 5 6 7 8 9]
+--- Data Loaded: Features=784, Classes=10 ---
+************ Start ************
+--- Loading data ---
+--- Loading Stage 2 Data ---
+Loading training data from: data/stage_2_data/train.csv
+Training data loaded successfully.
+  Features (X_train): (59999, 784)
+  Labels (y_train): (59999,)
+Loading testing data from: data/stage_2_data/test.csv
+Testing data loaded successfully.
+  Features (X_test): (9999, 784)
+  Labels (y_test): (9999,)
+--- Data Loading Complete ---
+--- Data loaded successfully ---
+Train data X shape: (59999, 784)
+Train data y shape: (59999,)
+Test data X shape: (9999, 784)
+Test data y shape: (9999,)
+--- Running method ---
+method running...
+--start training...
+evaluating performance...
+Epoch: 0, Accuracy: 0.0987, Precision: 0.1039, Recall: 0.0987, F1: 0.0930, Loss: 2.3868
+evaluating performance...
+Epoch: 100, Accuracy: 0.9699, Precision: 0.9699, Recall: 0.9699, F1: 0.9699, Loss: 0.1238
+evaluating performance...
+Epoch: 200, Accuracy: 0.9877, Precision: 0.9877, Recall: 0.9877, F1: 0.9877, Loss: 0.0498
+evaluating performance...
+Epoch: 300, Accuracy: 0.9941, Precision: 0.9941, Recall: 0.9941, F1: 0.9941, Loss: 0.0253
+evaluating performance...
+Epoch: 400, Accuracy: 0.9962, Precision: 0.9962, Recall: 0.9962, F1: 0.9962, Loss: 0.0162
+--start testing...
+--- Saving results ---
+saving results...
+Results saved successfully to: result/stage_2_result/MLP_/prediction_result.pkl
+evaluating performance...
+************ Overall Performance ************
+accuracy: 0.9737
+precision_macro: 0.9736
+recall_macro: 0.9735
+f1_macro: 0.9735
+
+************ Architecture Comparison ************
+
+==================================================
+Training Architecture 1 of 5
+==================================================
+
+Configuration Details:
+- Architecture Name: Arch_1
+- Network Structure: 512 -> 256 -> 128 -> 10
+- Total Layers: 4
+- Activation Function: ReLU
+- Dropout Rate: 0.3
+- Optimizer: Adam
+- Optimizer Settings:
+  • lr: 0.001
+
+Starting training...
+--- Loading data ---
+--- Loading Stage 2 Data ---
+Loading training data from: data/stage_2_data/train.csv
+Training data loaded successfully.
+  Features (X_train): (59999, 784)
+  Labels (y_train): (59999,)
+Loading testing data from: data/stage_2_data/test.csv
+Testing data loaded successfully.
+  Features (X_test): (9999, 784)
+  Labels (y_test): (9999,)
+--- Data Loading Complete ---
+--- Data loaded successfully ---
+Train data X shape: (59999, 784)
+Train data y shape: (59999,)
+Test data X shape: (9999, 784)
+Test data y shape: (9999,)
+--- Running method ---
+method running...
+--start training...
+evaluating performance...
+Epoch: 0, Accuracy: 0.1024, Precision: 0.1156, Recall: 0.1024, F1: 0.0819, Loss: 2.3864
+evaluating performance...
+Epoch: 100, Accuracy: 0.9797, Precision: 0.9797, Recall: 0.9797, F1: 0.9797, Loss: 0.0840
+evaluating performance...
+Epoch: 200, Accuracy: 0.9950, Precision: 0.9951, Recall: 0.9950, F1: 0.9950, Loss: 0.0242
+evaluating performance...
+Epoch: 300, Accuracy: 0.9981, Precision: 0.9982, Recall: 0.9981, F1: 0.9981, Loss: 0.0105
+evaluating performance...
+Epoch: 400, Accuracy: 0.9990, Precision: 0.9991, Recall: 0.9990, F1: 0.9990, Loss: 0.0061
+--start testing...
+--- Saving results ---
+saving results...
+Results saved successfully to: result/stage_2_result/MLP_/prediction_result.pkl
+evaluating performance...
+
+Training Complete - Results:
+
+==================================================
+Training Architecture 2 of 5
+==================================================
+
+Configuration Details:
+- Architecture Name: Arch_2
+- Network Structure: 1024 -> 512 -> 256 -> 128 -> 10
+- Total Layers: 5
+- Activation Function: SiLU
+- Dropout Rate: 0.4
+- Optimizer: AdamW
+- Optimizer Settings:
+  • lr: 0.001
+  • weight_decay: 0.0001
+
+Starting training...
+--- Loading data ---
+--- Loading Stage 2 Data ---
+Loading training data from: data/stage_2_data/train.csv
+Training data loaded successfully.
+  Features (X_train): (59999, 784)
+  Labels (y_train): (59999,)
+Loading testing data from: data/stage_2_data/test.csv
+Testing data loaded successfully.
+  Features (X_test): (9999, 784)
+  Labels (y_test): (9999,)
+--- Data Loading Complete ---
+--- Data loaded successfully ---
+Train data X shape: (59999, 784)
+Train data y shape: (59999,)
+Test data X shape: (9999, 784)
+Test data y shape: (9999,)
+--- Running method ---
+method running...
+--start training...
+evaluating performance...
+Epoch: 0, Accuracy: 0.0895, Precision: 0.0880, Recall: 0.0895, F1: 0.0852, Loss: 2.4204
+evaluating performance...
+Epoch: 100, Accuracy: 0.9860, Precision: 0.9860, Recall: 0.9860, F1: 0.9860, Loss: 0.0692
+evaluating performance...
+Epoch: 200, Accuracy: 0.9964, Precision: 0.9964, Recall: 0.9964, F1: 0.9964, Loss: 0.0211
+evaluating performance...
+Epoch: 300, Accuracy: 0.9985, Precision: 0.9985, Recall: 0.9985, F1: 0.9985, Loss: 0.0093
+evaluating performance...
+Epoch: 400, Accuracy: 0.9994, Precision: 0.9994, Recall: 0.9994, F1: 0.9994, Loss: 0.0054
+--start testing...
+--- Saving results ---
+saving results...
+Results saved successfully to: result/stage_2_result/MLP_/prediction_result.pkl
+evaluating performance...
+
+Training Complete - Results:
+
+==================================================
+Training Architecture 3 of 5
+==================================================
+
+Configuration Details:
+- Architecture Name: Arch_3
+- Network Structure: 1024 -> 512 -> 10
+- Total Layers: 3
+- Activation Function: ReLU
+- Dropout Rate: 0.5
+- Optimizer: SGD
+- Optimizer Settings:
+  • lr: 0.01
+  • momentum: 0.9
+
+Starting training...
+--- Loading data ---
+--- Loading Stage 2 Data ---
+Loading training data from: data/stage_2_data/train.csv
+Training data loaded successfully.
+  Features (X_train): (59999, 784)
+  Labels (y_train): (59999,)
+Loading testing data from: data/stage_2_data/test.csv
+Testing data loaded successfully.
+  Features (X_test): (9999, 784)
+  Labels (y_test): (9999,)
+--- Data Loading Complete ---
+--- Data loaded successfully ---
+Train data X shape: (59999, 784)
+Train data y shape: (59999,)
+Test data X shape: (9999, 784)
+Test data y shape: (9999,)
+--- Running method ---
+method running...
+--start training...
+evaluating performance...
+Epoch: 0, Accuracy: 0.0960, Precision: 0.1091, Recall: 0.0960, F1: 0.0932, Loss: 2.4297
+evaluating performance...
+Epoch: 100, Accuracy: 0.9101, Precision: 0.9099, Recall: 0.9101, F1: 0.9099, Loss: 0.3032
+evaluating performance...
+Epoch: 200, Accuracy: 0.9330, Precision: 0.9329, Recall: 0.9330, F1: 0.9329, Loss: 0.2244
+evaluating performance...
+Epoch: 300, Accuracy: 0.9453, Precision: 0.9452, Recall: 0.9453, F1: 0.9453, Loss: 0.1846
+evaluating performance...
+Epoch: 400, Accuracy: 0.9523, Precision: 0.9522, Recall: 0.9523, F1: 0.9522, Loss: 0.1589
+--start testing...
+--- Saving results ---
+saving results...
+Results saved successfully to: result/stage_2_result/MLP_/prediction_result.pkl
+evaluating performance...
+
+Training Complete - Results:
+
+==================================================
+Training Architecture 4 of 5
+==================================================
+
+Configuration Details:
+- Architecture Name: Arch_4
+- Network Structure: 256 -> 256 -> 256 -> 256 -> 10
+- Total Layers: 5
+- Activation Function: GELU
+- Dropout Rate: 0.2
+- Optimizer: AdamW
+- Optimizer Settings:
+  • lr: 0.0005
+  • weight_decay: 1e-05
+
+Starting training...
+--- Loading data ---
+--- Loading Stage 2 Data ---
+Loading training data from: data/stage_2_data/train.csv
+Training data loaded successfully.
+  Features (X_train): (59999, 784)
+  Labels (y_train): (59999,)
+Loading testing data from: data/stage_2_data/test.csv
+Testing data loaded successfully.
+  Features (X_test): (9999, 784)
+  Labels (y_test): (9999,)
+--- Data Loading Complete ---
+--- Data loaded successfully ---
+Train data X shape: (59999, 784)
+Train data y shape: (59999,)
+Test data X shape: (9999, 784)
+Test data y shape: (9999,)
+--- Running method ---
+method running...
+--start training...
+evaluating performance...
+Epoch: 0, Accuracy: 0.1153, Precision: 0.1187, Recall: 0.1153, F1: 0.1052, Loss: 2.3578
+evaluating performance...
+Epoch: 100, Accuracy: 0.9741, Precision: 0.9741, Recall: 0.9741, F1: 0.9741, Loss: 0.0949
+evaluating performance...
+Epoch: 200, Accuracy: 0.9904, Precision: 0.9904, Recall: 0.9904, F1: 0.9904, Loss: 0.0357
+evaluating performance...
+Epoch: 300, Accuracy: 0.9959, Precision: 0.9959, Recall: 0.9959, F1: 0.9959, Loss: 0.0158
+evaluating performance...
+Epoch: 400, Accuracy: 0.9982, Precision: 0.9983, Recall: 0.9982, F1: 0.9983, Loss: 0.0086
+--start testing...
+--- Saving results ---
+saving results...
+Results saved successfully to: result/stage_2_result/MLP_/prediction_result.pkl
+evaluating performance...
+
+Training Complete - Results:
+
+==================================================
+Training Architecture 5 of 5
+==================================================
+
+Configuration Details:
+- Architecture Name: Arch_5
+- Network Structure: 128 -> 64 -> 10
+- Total Layers: 3
+- Activation Function: ELU
+- Dropout Rate: 0.6
+- Optimizer: Adam
+- Optimizer Settings:
+  • lr: 0.002
+
+Starting training...
+--- Loading data ---
+--- Loading Stage 2 Data ---
+Loading training data from: data/stage_2_data/train.csv
+Training data loaded successfully.
+  Features (X_train): (59999, 784)
+  Labels (y_train): (59999,)
+Loading testing data from: data/stage_2_data/test.csv
+Testing data loaded successfully.
+  Features (X_test): (9999, 784)
+  Labels (y_test): (9999,)
+--- Data Loading Complete ---
+--- Data loaded successfully ---
+Train data X shape: (59999, 784)
+Train data y shape: (59999,)
+Test data X shape: (9999, 784)
+Test data y shape: (9999,)
+--- Running method ---
+method running...
+--start training...
+evaluating performance...
+Epoch: 0, Accuracy: 0.0932, Precision: 0.0916, Recall: 0.0932, F1: 0.0910, Loss: 2.5680
+evaluating performance...
+Epoch: 100, Accuracy: 0.8958, Precision: 0.8955, Recall: 0.8958, F1: 0.8955, Loss: 0.3740
+evaluating performance...
+Epoch: 200, Accuracy: 0.9210, Precision: 0.9209, Recall: 0.9210, F1: 0.9209, Loss: 0.2776
+evaluating performance...
+Epoch: 300, Accuracy: 0.9322, Precision: 0.9321, Recall: 0.9322, F1: 0.9321, Loss: 0.2305
+evaluating performance...
+Epoch: 400, Accuracy: 0.9392, Precision: 0.9392, Recall: 0.9392, F1: 0.9392, Loss: 0.2058
+--start testing...
+--- Saving results ---
+saving results...
+Results saved successfully to: result/stage_2_result/MLP_/prediction_result.pkl
+evaluating performance...
+
+Training Complete - Results:
+
+================================================================================
+************ Final Results Comparison ************
+================================================================================
+
+Architecture           Hidden_Dims Activation  Dropout Optimizer  accuracy  precision_macro  recall_macro  f1_macro
+      Arch_1       (512, 256, 128)       ReLU      0.3      Adam  0.977498         0.977243      0.977257  0.977238
+      Arch_2 (1024, 512, 256, 128)       SiLU      0.4     AdamW  0.976998         0.976919      0.976860  0.976877
+      Arch_3           (1024, 512)       ReLU      0.5       SGD  0.951895         0.951494      0.951285  0.951344
+      Arch_4  (256, 256, 256, 256)       GELU      0.2     AdamW  0.977098         0.977017      0.976870  0.976932
+      Arch_5             (128, 64)        ELU      0.6      Adam  0.932193         0.931719      0.931403  0.931531
+
+Detailed results saved to: result/stage_2_result/mlp_architecture_comparison.csv
+
+================================================================================
+************ Best Architecture Summary ************
+================================================================================
+
+Best Architecture: Arch_1
+Configuration:
+- Hidden Layers: (512, 256, 128)
+- Activation: ReLU
+- Dropout: 0.3
+- Optimizer: Adam
+
+Performance Metrics:
+- Accuracy: 0.9775
