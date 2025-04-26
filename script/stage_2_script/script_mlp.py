@@ -151,10 +151,10 @@ if __name__ == '__main__':
         scores = setting_obj.load_run_save_evaluate()
         
         print(f"\nTraining Complete - Results:")
-        # print(f"- Accuracy: {scores['accuracy']:.4f}")
-        # print(f"- F1 Score: {scores['f1_score']:.4f}")
-        # print(f"- Precision: {scores['precision']:.4f}")
-        # print(f"- Recall: {scores['recall']:.4f}")
+        print(f"- Accuracy: {scores['accuracy']:.4f}")
+        print(f"- F1 Score: {scores['f1_macro']:.4f}")
+        print(f"- Precision: {scores['precision_macro']:.4f}")
+        print(f"- Recall: {scores['recall_macro']:.4f}")
         
         results.append({
             "Architecture": f"Arch_{i}",
@@ -191,9 +191,9 @@ if __name__ == '__main__':
     print(f"- Activation: {best_arch['Activation']}")
     print(f"- Dropout: {best_arch['Dropout']}")
     print(f"- Optimizer: {best_arch['Optimizer']}")
-    # print(f"\nPerformance Metrics:")
-    # print(f"- Accuracy: {best_arch['accuracy']:.4f}")
-    # print(f"- F1 Score: {best_arch['f1_score']:.4f}")
-    # print(f"- Precision: {best_arch['precision']:.4f}")
-    # print(f"- Recall: {best_arch['recall']:.4f}")
+    print(f"\nPerformance Metrics:")
+    print(f"- Accuracy: {best_arch['accuracy']:.4f}")
+    print(f"- F1 Score: {best_arch['f1_macro']:.4f}")
+    print(f"- Precision: {best_arch['precision_macro']:.4f}")
+    print(f"- Recall: {best_arch['recall_macro']:.4f}")
     # ------------------------------------------------------
