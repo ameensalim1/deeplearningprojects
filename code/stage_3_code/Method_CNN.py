@@ -34,6 +34,8 @@ class Method_CNN(method, nn.Module):
         method.__init__(self, mName, mDescription)
         nn.Module.__init__(self)
 
+        self.mName = mName
+        self.mDescription = mDescription
         self.input_channels = input_channels
         self.num_classes = num_classes
         self.image_h, self.image_w = image_size
@@ -44,7 +46,7 @@ class Method_CNN(method, nn.Module):
 
         self.train_losses = []
         self.train_acc_epochs = []
-
+        
         # Example CNN Architecture: Adjust based on your dataset (MNIST, CIFAR, ORL)
 
         self.conv1 = nn.Conv2d(self.input_channels, 16, kernel_size=3, stride=1, padding=1)
@@ -67,6 +69,10 @@ class Method_CNN(method, nn.Module):
         self.relu3 = nn.ReLU()
         self.fc2 = nn.Linear(128, self.num_classes)
         # CrossEntropyLoss combines LogSoftmax and NLLLoss, so no final activation here.
+
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.to(self.device)
+        print(f"[INFO] Model moved to device: {self.device}")
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         # Input x expected as (N, C, H, W)
@@ -137,9 +143,9 @@ class Method_CNN(method, nn.Module):
         if not isinstance(test_X_data, np.ndarray) or test_X_data.ndim != 4:
             raise ValueError(f"test_X_data must be a 4D numpy array (N, C, H, W), got {type(test_X_data)} with shape {getattr(test_X_data, 'shape', 'N/A')}")
 
-        train_X_tensor = torch.FloatTensor(train_X_data)
-        train_y_tensor = torch.LongTensor(train_y_data.values if isinstance(train_y_data, pd.Series) else train_y_data)
-        test_X_tensor = torch.FloatTensor(test_X_data)
+        train_X_tensor = torch.FloatTensor(train_X_data).to(self.device)
+        train_y_tensor = torch.LongTensor(train_y_data.values if isinstance(train_y_data, pd.Series) else train_y_data).to(self.device)
+        test_X_tensor = torch.FloatTensor(test_X_data).to(self.device)
 
         print('--start training...')
         self.train_model(train_X_tensor, train_y_tensor)
