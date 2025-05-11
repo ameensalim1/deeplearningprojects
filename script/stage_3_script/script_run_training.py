@@ -13,7 +13,7 @@ from code.stage_3_code.Evaluate_Accuracy import Evaluate_Accuracy
 
 # --- Configuration ---
 # Choose dataset: "MNIST", "CIFAR", "ORL" (must match pickle filename in data/stage_3_data/)
-DATASET_CHOICE = "MNIST" 
+DATASET_CHOICE = "ORL" 
 METHOD_CHOICE = "CNN"
 
 # 1. Setup Dataset Loader

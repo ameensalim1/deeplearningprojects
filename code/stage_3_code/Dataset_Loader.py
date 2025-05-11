@@ -49,6 +49,10 @@ class Dataset_Loader(dataset):
                     self.image_channels = 1
                     self.image_height, self.image_width = temp_img.shape
                     self.actual_img_shape_from_load = (self.image_channels, self.image_height, self.image_width)
+                elif temp_img.ndim == 3 and temp_img.shape[2] == 3:
+                    self.image_channels = 1
+                    self.image_height, self.image_width = temp_img.shape[0:2]
+                    self.actual_img_shape_from_load = (self.image_channels, self.image_height, self.image_width)
                 else:
                     raise ValueError(f"{self.dataset_name} images expected to be 2D (H,W), got {temp_img.ndim}D")
             elif self.dataset_name == "CIFAR":
@@ -67,14 +71,22 @@ class Dataset_Loader(dataset):
         for instance in data_split:
             image_matrix_raw = instance['image'] # numpy array
             image_label = instance['label']
+            if self.dataset_name == "ORL":
+                image_label -= 1  # Make labels zero-based for CrossEntropyLoss
 
             # Normalize image data to [0, 1]
             image_matrix = image_matrix_raw / 255.0 if image_matrix_raw.max() > 1.0 else image_matrix_raw.copy()
+
+            if self.dataset_name == "ORL": # Gray scale, but with RGB values
+                if image_matrix.ndim == 3 and image_matrix.shape[2] == 3:
+                    image_matrix = image_matrix[:, :, 0:1] # Use only one channel, since they are all the same value
             
             # Reshape to (C, H, W)
             if self.dataset_name == "MNIST" or self.dataset_name == "ORL": # Grayscale
                 if image_matrix.ndim == 2: # (H, W)
                     image_matrix = np.expand_dims(image_matrix, axis=0) # (1, H, W)
+                elif image_matrix.ndim == 3 and image_matrix.shape[2] == 1:  # (H, W, 1)
+                    image_matrix = np.transpose(image_matrix, (2, 0, 1))  # → (1, H, W)
                 elif image_matrix.ndim == 3 and image_matrix.shape[0] == 1: # Already (1, H, W)
                     pass
                 else:
