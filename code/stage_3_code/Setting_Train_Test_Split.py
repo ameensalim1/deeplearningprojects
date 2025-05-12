@@ -13,16 +13,33 @@ import matplotlib.pyplot as plt
 # Ensure your Method classes are imported
 from code.stage_3_code.Method_MLP import Method_MLP
 from code.stage_3_code.Method_CNN import Method_CNN
+from code.stage_3_code.Dataset_Loader import Dataset_Loader
 
 class Setting_Train_Test_Split(setting):
     # Removed fold attribute as it's not used for train/test split scenario
+    dataset: Dataset_Loader
+    method:  Method_CNN
+    result:  Any
+    evaluate: Any
 
     def load_run_save_evaluate(self) -> Any: # Return type might be dict of scores now
 
-        print("--- Loading data ---")
-        # The self.dataset instance should be an instance of the (modified) Dataset_Loader,
-        # initialized with the specific dataset_name (e.g., "MNIST") in your main script.
-        loaded_data: Dict[str, Optional[Dict[str, Any]]] = self.dataset.load()
+        print("--- Preparing data ---")
+        # if the method already has its data injected from main, use that
+        if self.dataset.data is None:
+            print(">>> loading dataset for the first time")
+            self.dataset.data = self.dataset.load()
+        loaded_data = self.dataset.data
+        # also give it to the method so it can reuse it if needed
+        self.method.data = loaded_data
+        assert isinstance(loaded_data, dict), "loaded_data should be a dict"
+
+
+        # at this point, loaded_data must be a dict
+        if loaded_data is None:
+            raise RuntimeError("Failed to load data; `loaded_data` is None")
+        # now mypy/Pylance knows loaded_data is not None:
+        assert isinstance(loaded_data, dict)
 
         train_data = loaded_data.get('train')
         test_data = loaded_data.get('test')
@@ -81,7 +98,7 @@ class Setting_Train_Test_Split(setting):
             # n_classes = self.dataset.num_classes # Or derive from y labels
 
 
-        print("--- Running method ---")
+        print("--- Running method with pre‐loaded data ---")
         self.method.data = loaded_data 
         learned_result: Dict[str, Any] = self.method.run()
 

@@ -14,7 +14,7 @@ from code.stage_3_code.Evaluate_Accuracy import Evaluate_Accuracy
 from sklearn.metrics import precision_score, recall_score, f1_score
 
 class Method_CNN(method, nn.Module):
-    data = None
+    data: dict
     max_epoch = 50 # CNNs can be slower; adjust as needed
     learning_rate = 1e-3
     
@@ -83,7 +83,7 @@ class Method_CNN(method, nn.Module):
         x = self.fc2(x) # Output logits
         return x
 
-    def train_model(self, X_tensor: torch.Tensor, y_tensor: torch.LongTensor): # Renamed from 'train' to avoid conflict
+    def train_model(self, X_tensor: torch.Tensor, y_tensor: torch.Tensor): # Renamed from 'train' to avoid conflict
         optimizer = self.optimizer_cls(self.parameters(), **self.optimizer_kwargs)
         loss_function = self.loss_fn
         accuracy_evaluator = Evaluate_Accuracy('training evaluator', '')

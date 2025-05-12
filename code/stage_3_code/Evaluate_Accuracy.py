@@ -11,7 +11,11 @@ from sklearn.metrics import precision_recall_fscore_support
 
 
 class Evaluate_Accuracy(evaluate):
-    data = None
+    data: dict
+    def __init__(self, eName: str, eDescription: str):
+        super().__init__(eName, eDescription)
+        # initialize to an empty dict so self.data[...] is valid
+        self.data = {}
     
     def evaluate(self):
         """

@@ -13,8 +13,8 @@ class Result_Saver(result):
     data = None
     # Removed fold_count attribute
     # fold_count = None
-    result_destination_folder_path = None
-    result_destination_file_name = None
+    result_destination_folder_path = str = ''
+    result_destination_file_name = str = ''
 
     def save(self):
         """Saves the evaluation result data to a pickle file."""

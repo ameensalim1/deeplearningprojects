@@ -6,8 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 # Add the project root to the Python path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-if project_root not in sys.path:
-    sys.path.insert(0, project_root)
+sys.path.insert(0, project_root)
 
 from code.stage_3_code.Dataset_Loader import Dataset_Loader
 from code.stage_3_code.Method_CNN import Method_CNN
@@ -27,6 +26,8 @@ dataset = Dataset_Loader(dName=f"{DATASET_CHOICE} Dataset",
                          dDescription=f"Loading {DATASET_CHOICE}",
                          dataset_name=DATASET_CHOICE) # This 'dataset_name' is key for pickle file
 data = dataset.load() # Load data to populate image_channels, image_height, etc.
+if data['train'] is None or data['test'] is None:
+    raise RuntimeError(f"Failed to load train or test split for {DATASET_CHOICE}")
 N, C, H, W = data['train']['X'].shape
 num_classes = len(np.unique(data['train']['y']))
 
@@ -61,10 +62,14 @@ for arch in architectures:
                                 padding=arch["kernel"]//2))
         in_c = out_c
     # c) recompute flatten & FC
+    # c) recompute flatten & FC (now matches your forward exactly)
     dummy = torch.zeros(1, C, H, W)
-    x = method.pool2(method.pool1(
-           method.relu1(method.conv1(dummy))))
-    flat_n = x.view(1,-1).shape[1]
+    with torch.no_grad():
+        x = method.relu1   (method.conv1(dummy))
+        x = method.pool1   (x)
+        x = method.relu2   (method.conv2(x))
+        x = method.pool2   (x)
+    flat_n = x.view(1, -1).shape[1]
     method.flattened_size = flat_n
     method.fc1 = torch.nn.Linear(flat_n, arch["fc_dim"])
     method.fc2 = torch.nn.Linear(arch["fc_dim"], num_classes)
