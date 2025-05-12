@@ -16,7 +16,7 @@ from code.stage_3_code.Evaluate_Accuracy import Evaluate_Accuracy
 
 # --- Configuration ---
 # Choose dataset: "MNIST", "CIFAR", "ORL" (must match pickle filename in data/stage_3_data/)
-DATASET_CHOICE = "ORL" 
+DATASET_CHOICE = "CIFAR" 
 METHOD_CHOICE = "CNN"
 OUTPUT_CSV   = "output/architecture_comparison.csv"
 
@@ -43,6 +43,7 @@ methods = []
 
 # Loop over architectures
 for arch in architectures:
+    
     print(f"\n--- Training {arch['name']} ---")
     # a) build a fresh Method_CNN
     method = Method_CNN(
@@ -53,26 +54,35 @@ for arch in architectures:
       image_size=(H, W),
       optimizer_cls=torch.optim.Adam
     )
+    method.to(method.device)
+
+    print(f"[DEBUG] Torch is using device: {method.device}")
+    print(f"[DEBUG] Is CUDA available? {torch.cuda.is_available()}")
+    print(f"[DEBUG] Current CUDA device: {torch.cuda.current_device()}")
+    print(f"[DEBUG] CUDA device name: {torch.cuda.get_device_name(torch.cuda.current_device())}")
+    print(f"Current Device: {method.device}")
+
     # b) overwrite conv1 & conv2
     in_c = C
     for i, out_c in enumerate(arch["conv_feats"], start=1):
         setattr(method, f"conv{i}",
                 torch.nn.Conv2d(in_c, out_c,
                                 kernel_size=arch["kernel"],
-                                padding=arch["kernel"]//2))
+                                padding=arch["kernel"]//2).to(method.device))
         in_c = out_c
     # c) recompute flatten & FC
     # c) recompute flatten & FC (now matches your forward exactly)
-    dummy = torch.zeros(1, C, H, W)
+    dummy = torch.zeros(1, C, H, W).to(method.device)
     with torch.no_grad():
-        x = method.relu1   (method.conv1(dummy))
+        x = method.relu1   (method.conv1(dummy).to(method.device))
         x = method.pool1   (x)
-        x = method.relu2   (method.conv2(x))
+        x = method.relu2   (method.conv2(x).to(method.device))
         x = method.pool2   (x)
     flat_n = x.view(1, -1).shape[1]
     method.flattened_size = flat_n
-    method.fc1 = torch.nn.Linear(flat_n, arch["fc_dim"])
-    method.fc2 = torch.nn.Linear(arch["fc_dim"], num_classes)
+    method.fc1 = torch.nn.Linear(flat_n, arch["fc_dim"]).to(method.device)
+    method.fc2 = torch.nn.Linear(arch["fc_dim"], num_classes).to(method.device)
+    method.to(method.device)
 
     # d) prepare and run
     evaluator = Evaluate_Accuracy("eval","")

@@ -70,7 +70,7 @@ class Method_CNN(method, nn.Module):
         self.fc2 = nn.Linear(128, self.num_classes)
         # CrossEntropyLoss combines LogSoftmax and NLLLoss, so no final activation here.
 
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.to(self.device)
         print(f"[INFO] Model moved to device: {self.device}")
 
@@ -87,6 +87,12 @@ class Method_CNN(method, nn.Module):
         optimizer = self.optimizer_cls(self.parameters(), **self.optimizer_kwargs)
         loss_function = self.loss_fn
         accuracy_evaluator = Evaluate_Accuracy('training evaluator', '')
+
+        print(f"[DEBUG] X_tensor device: {X_tensor.device}, y_tensor device: {y_tensor.device}")
+        for name, param in self.named_parameters():
+            if param.device != self.device:
+                print(f"[WARNING] Param '{name}' is on {param.device}, expected {self.device}")
+
 
         for epoch in range(self.max_epoch):
             self.train() # PyTorch nn.Module method to set training mode
