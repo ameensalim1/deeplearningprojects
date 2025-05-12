@@ -84,6 +84,9 @@ class Method_CNN(method, nn.Module):
         return x
 
     def train_model(self, X_tensor: torch.Tensor, y_tensor: torch.Tensor): # Renamed from 'train' to avoid conflict
+        self.to("cuda")
+        X_tensor = X_tensor.to("cuda")
+        y_tensor = y_tensor.to("cuda")
         optimizer = self.optimizer_cls(self.parameters(), **self.optimizer_kwargs)
         loss_function = self.loss_fn
         accuracy_evaluator = Evaluate_Accuracy('training evaluator', '')

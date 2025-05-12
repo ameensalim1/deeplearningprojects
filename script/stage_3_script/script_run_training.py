@@ -4,6 +4,7 @@ import pandas as pd
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
+import gc
 # Add the project root to the Python path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 sys.path.insert(0, project_root)
@@ -33,7 +34,7 @@ num_classes = len(np.unique(data['train']['y']))
 
 architectures = [
     {"name":"Arch_A","conv_feats":[16,32], "fc_dim":128,"kernel":3},
-    {"name":"Arch_B","conv_feats":[32,64], "fc_dim":256,"kernel":3},
+    #{"name":"Arch_B","conv_feats":[32,64], "fc_dim":256,"kernel":3},
     {"name":"Arch_C","conv_feats":[64,128],"fc_dim":512,"kernel":5},
     {"name":"Arch_D","conv_feats":[128,256],"fc_dim":256,"kernel":3},
 ]
@@ -96,6 +97,9 @@ for arch in architectures:
     scores["architecture"] = arch["name"]
     results.append(scores)
     methods.append(method)
+    del method
+    gc.collect()
+    torch.cuda.empty_cache()
 
 # 4) tabulate
 df = pd.DataFrame(results).set_index("architecture")
