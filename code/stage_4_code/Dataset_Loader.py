@@ -12,6 +12,7 @@ import re
 from typing import Dict, Optional, Any, List, Tuple, Set
 import numpy as np
 from collections import Counter
+import nltk
 # It's good practice to try importing and provide a message if NLTK components are missing.
 try:
     from nltk.tokenize import word_tokenize
@@ -48,14 +49,29 @@ class Dataset_Loader(dataset):
 
     def __init__(self, dName: str, dDescription: str, max_seq_length: int = 200):
         super().__init__(dName, dDescription)
+        self.dName = dName
+        self.dDescription = dDescription
+
+        try:
+            nltk.data.find('tokenizers/punkt')
+        except LookupError:
+            print("Downloading NLTK punkt tokenizer...")
+            nltk.download('punkt', quiet=True)
+
+        try:
+            nltk.data.find('corpora/stopwords')
+        except LookupError:
+            print("Downloading NLTK stopwords...")
+            nltk.download('stopwords', quiet=True)
+
         self.max_seq_length = max_seq_length
+        
+
+        # now safely load stopwords
         try:
             self.stop_words = set(stopwords.words('english'))
-            # self.stemmer = PorterStemmer() # Optional
         except LookupError:
-            print("NLTK 'stopwords' resource not found. Please download it: nltk.download('stopwords')")
-            # Handle appropriately, e.g., proceed without stopword removal or raise error
-            self.stop_words = set() # Default to empty set if not found
+            self.stop_words = set()
         # Initialize vocab and other attributes that will be built during load()
         self.vocab = {self.PAD_TOKEN: 0, self.UNK_TOKEN: 1} # Initialize with PAD and UNK
         self.idx2word = {0: self.PAD_TOKEN, 1: self.UNK_TOKEN}
@@ -74,7 +90,11 @@ class Dataset_Loader(dataset):
         # Remove punctuation - keep letters, numbers, and spaces
         text = re.sub(r'[^a-z0-9\s]', '', text)
         
-        tokens = word_tokenize(text)
+        try:
+            tokens = word_tokenize(text)
+        except (LookupError, OSError):
+            # If NLTK’s punkt isn’t available, fall back to simple split
+            tokens = text.split()
         
         # Remove stopwords
         if self.stop_words: # self.stop_words should be initialized in __init__

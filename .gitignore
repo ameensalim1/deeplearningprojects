@@ -2,3 +2,4 @@ data/stage_2_data/train.csv
 .venv/
 data/stage_3_data/
 data/stage_4_data/
+venv/

@@ -103,16 +103,13 @@ def main(use_cuda: bool):
     # Output results to a specific folder for stage 4
     results_folder = os.path.join(project_root, "results", "stage_4_results", "text_classification")
     os.makedirs(results_folder, exist_ok=True)
-    result_file_name = f"{rnn_method.mName}_results_LR{learning_rate}_Epochs{max_epoch}"
+    result_file_name = f"{rnn_method.method_name}_results_LR{learning_rate}_Epochs{max_epoch}"
     result_save_path = os.path.join(results_folder, result_file_name)
 
-    result_saver_params = {
-        'rName': "TextClassificationResults",
-        'rDescription': f"Results for {rnn_method.mName}",
-        'destination_folder_path': results_folder, # Pass the folder
-        'destination_file_name': result_file_name  # Pass the file name (without .pkl)
-    }
-    result_saver = Result_Saver(**result_saver_params)
+    result_saver = Result_Saver("TextClassificationResults",
+                                f"Results for {rnn_method.method_name}")
+    result_saver.result_destination_folder_path = results_folder
+    result_saver.result_destination_file_name   = result_file_name
 
     # ---- Evaluator ----
     print("Initializing Evaluator...")
@@ -124,15 +121,16 @@ def main(use_cuda: bool):
 
     # ---- Setting (Experiment Runner) ----
     print("Initializing Setting for RNN Text Classification...")
-    setting_params = {
-        'sName': "RNNTextClassificationExperiment",
-        'sDescription': "Running RNN for IMDb sentiment analysis",
-        'dataset': text_dataset,
-        'method': rnn_method,
-        'result_saver': result_saver,
-        'evaluator': evaluator
-    }
-    text_classification_setting = Setting_RNN_TextClassification(**setting_params)
+    text_classification_setting = Setting_RNN_TextClassification(
+        "RNNTextClassificationExperiment",
+        "Running RNN for IMDb sentiment analysis"
+    )
+    text_classification_setting.prepare(
+        text_dataset,
+        rnn_method,
+        result_saver,
+        evaluator
+    )
 
     # ---- Run Everything ----
     print("Starting the experiment: Load, Run, Save, Evaluate...")

@@ -10,9 +10,10 @@ from code.base_class.setting import setting
 import numpy as np
 from typing import Optional, Dict, Any 
 import matplotlib.pyplot as plt
+import os
 import torch # Added for tensor checks
 # Import the Method_RNN (to be created/renamed from Method_MLP)
-from .Method_RNN import Method_RNN 
+from code.stage_4_code.Method_RNN import Method_RNN 
 # Dataset_Loader will be used via self.dataset passed in __init__
 # Result_Saver will be used via self.result
 # Evaluate_Accuracy will be used via self.evaluate
@@ -29,8 +30,8 @@ class Setting_RNN_TextClassification(setting):
         # self.dataset is an instance of Dataset_Loader for text
         loaded_data: Dict[str, Optional[Dict[str, Any]]] = self.dataset.load()
 
-        train_data = loaded_data.get('train')
-        test_data = loaded_data.get('test')
+        train_data = loaded_data.get('train', {})
+        test_data = loaded_data.get('test', {})
 
         if not (train_data and train_data.get('X') is not None and train_data.get('y') is not None and train_data['X'].size > 0):
             print("ERROR: Training data loading failed or data is empty. Cannot proceed.")
@@ -75,10 +76,6 @@ class Setting_RNN_TextClassification(setting):
             return None 
 
         print("--- Saving results ---")
-        # Ensure result_destination_file_path is set in Result_Saver instance
-        if not self.result.result_destination_file_path:
-            self.result.result_destination_file_path = f"{self.method.mName}_results"
-            print(f"Result destination path not set, defaulting to: {self.result.result_destination_file_path}")
 
         self.result.data = learned_result
         self.result.save()
@@ -99,9 +96,11 @@ class Setting_RNN_TextClassification(setting):
             plt.xlabel("Epoch"); plt.ylabel("Loss")
             plt.title(f"{self.method.mName} - Training Loss")
             plt.legend(); plt.grid(True)
-            plt.savefig(f"{self.result.result_destination_file_path}_train_loss.png") 
+            base = os.path.join(self.result.result_destination_folder_path,
+                    self.result.result_destination_file_name)
+            plt.savefig(f"{base}_train_loss.png")
             plt.close()
-            print(f"Training loss curve saved to {self.result.result_destination_file_path}_train_loss.png")
+            print(f"Training loss curve saved to {base}_train_loss.png")
 
         epoch_accuracy_attr = None
         if hasattr(self.method, 'epoch_accuracies'): 
@@ -116,9 +115,11 @@ class Setting_RNN_TextClassification(setting):
             plt.xlabel("Log Interval / Epoch"); plt.ylabel("Accuracy")
             plt.title(f"{self.method.mName} - Training Accuracy Log")
             plt.legend(); plt.grid(True)
-            plt.savefig(f"{self.result.result_destination_file_path}_train_accuracy.png")
+            base = os.path.join(self.result.result_destination_folder_path,
+                    self.result.result_destination_file_name)
+            plt.savefig(f"{base}_accuracy_plot.png")
             plt.close()
-            print(f"Training accuracy curve saved to {self.result.result_destination_file_path}_train_accuracy.png")
+            print(f"Training accuracy curve saved to {base}_accuracy_plot.png")
 
         print(f"Evaluation Scores: {scores}")
         return scores

@@ -11,6 +11,7 @@ import numpy as np
 from code.base_class.method import method
 from code.stage_4_code.Evaluate_Accuracy import Evaluate_Accuracy # Assuming this is compatible or will be made so
 from sklearn.metrics import precision_score, recall_score, f1_score
+from torch.utils.data import TensorDataset, DataLoader
 
 class Method_RNN(method, nn.Module):
     data = None 
@@ -126,43 +127,48 @@ class Method_RNN(method, nn.Module):
         logits = self.fc(dropped_out) # (batch_size, num_classes)
         return logits
 
-    def train_model(self, X_train, y_train, X_val=None, y_val=None): # Changed method name from 'train' to avoid conflict
+    def train_model(self, X_train: torch.Tensor, y_train: torch.Tensor, batch_size: int = 64): # Changed method name from 'train' to avoid conflict
+        train_ds = TensorDataset(X_train, y_train)
+        train_loader = DataLoader(train_ds,
+                                  batch_size=batch_size,
+                                  shuffle=True,
+                                  drop_last=True)
+
         optimizer = self.optimizer_cls(self.parameters(), **self.optimizer_kwargs)
-        loss_function = self.loss_fn
-        accuracy_evaluator = Evaluate_Accuracy('training evaluator', '') 
+        loss_fn = self.loss_fn
+        evaluator = Evaluate_Accuracy('training evaluator','')
 
         for epoch in range(self.max_epoch):
-            self.train() 
-            
-            y_pred_logits = self.forward(X_train)
-            
-            train_loss = loss_function(y_pred_logits, y_train)
-            self.train_losses.append(train_loss.item())
-            
-            optimizer.zero_grad()
-            train_loss.backward()
-            optimizer.step()
+            self.train()
+            running_loss = 0.0
 
-            if epoch % 10 == 0 or epoch == self.max_epoch -1: 
-                self.eval() 
+            for Xb, yb in train_loader:
+                Xb, yb = Xb.to(self.device), yb.to(self.device)
+
+                optimizer.zero_grad()
+                logits = self.forward(Xb)
+                loss   = loss_fn(logits, yb)
+                loss.backward()
+                optimizer.step()
+
+                running_loss += loss.item() * Xb.size(0)
+
+            avg_loss = running_loss / len(train_loader.dataset)
+            self.train_losses.append(avg_loss)
+
+            # log & evaluate every 10 epochs
+            if epoch % 10 == 0 or epoch == self.max_epoch - 1:
+                self.eval()
                 with torch.no_grad():
-                    y_pred_proba = torch.softmax(y_pred_logits, dim=1)
-                    y_pred_labels = y_pred_proba.max(1)[1]
-                
-                accuracy_evaluator.data = {'true_y': y_train.cpu().numpy(), 'pred_y': y_pred_labels.cpu().numpy()}
-                eval_metrics = accuracy_evaluator.evaluate() 
-                current_accuracy = eval_metrics['accuracy']
-                self.epoch_accuracies.append(current_accuracy)
-                
-                y_true_np = y_train.cpu().numpy()
-                y_pred_np = y_pred_labels.cpu().numpy()
-                
-                precision = precision_score(y_true_np, y_pred_np, average='binary', zero_division=0)
-                recall = recall_score(y_true_np, y_pred_np, average='binary', zero_division=0)
-                f1 = f1_score(y_true_np, y_pred_np, average='binary', zero_division=0)
-                
-                print(f'Epoch: {epoch}, Accuracy: {current_accuracy:.4f}, Precision: {precision:.4f}, Recall: {recall:.4f}, F1: {f1:.4f}, Loss: {train_loss.item():.4f}')
-                self.train() 
+                    all_logits = self.forward(X_train)
+                    preds = all_logits.argmax(1).cpu().numpy()
+                    trues = y_train.cpu().numpy()
+                evaluator.data = {'true_y': trues, 'pred_y': preds}
+                metrics = evaluator.evaluate()
+                self.epoch_accuracies.append(metrics['accuracy'])
+
+                print(f"Epoch {epoch:>2}  loss={avg_loss:.4f}  "
+                      f"acc={metrics['accuracy']:.4f}")
 
     def test_model(self, X_test): 
         self.eval() 
@@ -176,17 +182,16 @@ class Method_RNN(method, nn.Module):
         print('method running...')
         print('--start training...')
         
-        X_train_np = self.data['train']['X']
-        y_train_np = self.data['train']['y']
-        
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.to(device) 
+        self.device = device
         print(f"Using device: {device}")
 
-        X_train_tensor = torch.LongTensor(X_train_np).to(device)
-        y_train_tensor = torch.LongTensor(y_train_np).to(device)
+        X_train = torch.LongTensor(self.data['train']['X']).to(self.device)
+        y_train = torch.LongTensor(self.data['train']['y']).to(self.device)
 
-        self.train_model(X_train_tensor, y_train_tensor) 
+        self.train_model(X_train, y_train, batch_size=64)
+
         
         print('--start testing...')
         pred_y_np = np.array([])
@@ -205,3 +210,4 @@ class Method_RNN(method, nn.Module):
             print("Warning: No test data or empty test data. Skipping testing.")
 
         return {'pred_y': pred_y_np, 'true_y': true_y_np}
+    
