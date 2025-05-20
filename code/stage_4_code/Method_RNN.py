@@ -58,6 +58,8 @@ class Method_RNN(method, nn.Module):
     ):     
         method.__init__(self, mName, mDescription)
         nn.Module.__init__(self)
+        object.__setattr__(self, 'mName', mName)
+        object.__setattr__(self, 'mDescription', mDescription)
 
         self.vocab_size = vocab_size
         self.embedding_dim = embedding_dim
