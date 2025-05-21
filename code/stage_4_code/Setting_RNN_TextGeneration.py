@@ -35,7 +35,7 @@ class Setting_RNN_TextGeneration(setting):
         # Generate new text
         print("--- Generating new text ---")
         if isinstance(seed_text, str):
-            tokens = self.dataset._clean_text(seed_text)
+            tokens = self.dataset._clean_and_tokenize(seed_text)
             seed_ids = [self.dataset.vocab.get(t, self.dataset.vocab[self.dataset.UNK_TOKEN])
                         for t in tokens]
         else:
@@ -62,8 +62,8 @@ class Setting_RNN_TextGeneration(setting):
             plt.ylabel('Loss')
             plt.title(f"{self.method.mName} Training Loss")
             plt.grid(True)
-            base = os.path.join(self.result.destination_folder_path,
-                        self.result.destination_file_name)
+            base = os.path.join(self.result.result_destination_folder_path,
+                        self.result.result_destination_file_name)
             plt.savefig(f"{base}_gen_loss.png")
             plt.close()
 
