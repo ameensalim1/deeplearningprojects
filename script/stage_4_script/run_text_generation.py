@@ -1,13 +1,22 @@
-import torch
-import argparse
 import sys
 import os
 
-# make sure project root is on PYTHONPATH
-current_dir   = os.path.dirname(os.path.abspath(__file__))
-project_root  = os.path.dirname(os.path.dirname(current_dir))
-sys.path.insert(0, project_root)
+_project_root_path_fix = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "..")
+)
+if _project_root_path_fix not in sys.path:
+    sys.path.insert(0, _project_root_path_fix)
 
+import torch
+import argparse # For CUDA and MPS flags
+
+if _project_root_path_fix not in sys.path:
+    sys.path.insert(0, _project_root_path_fix)
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
 from code.stage_4_code.Gen_Dataset_Loader import Gen_Dataset_Loader
 from code.stage_4_code.Method_RNN_Generate import Method_RNN_Generate
 from code.stage_4_code.Setting_RNN_TextGeneration import Setting_RNN_TextGeneration
@@ -58,9 +67,38 @@ def main(use_cuda: bool, seed_text: str, max_length: int):
     )
     gen_method.max_epoch = max_epoch
 
-    # move to GPU if requested
-    device = torch.device("cuda" if (use_cuda and torch.cuda.is_available()) else "cpu")
+    # ---- Device Setup (CUDA, MPS, CPU) ----
+    selected_device_str = "cpu" # Default
+
+    if use_cuda:
+        if torch.cuda.is_available():
+            selected_device_str = "cuda"
+            print("CUDA is available. Using CUDA.")
+        else:
+            print("CUDA was requested, but is not available.")
+    
+    if selected_device_str == "cpu": # Only check for MPS if CUDA wasn't selected or isn't available
+        if torch.backends.mps.is_available():
+            selected_device_str = "mps"
+            print("Apple Metal (MPS) is available. Using MPS.")
+        else:
+            if use_cuda: # If CUDA was requested but not available, and MPS also not available
+                print("MPS is not available. Falling back to CPU.")
+            else: # If neither CUDA nor MPS were specifically requested or available
+                print("Neither CUDA nor MPS available/selected. Using CPU.")
+    
+    device = torch.device(selected_device_str)
     gen_method.to(device)
+    # Ensure the method object knows its device for internal data movement
+    if hasattr(gen_method, 'device'):
+        gen_method.device = device
+    else:
+        # If Method_RNN_Generate doesn't have a device attribute by design,
+        # this might indicate a different way it expects device info or handles data.
+        # For now, we'll attempt to set it.
+        print("Warning: Method_RNN_Generate might not have a 'device' attribute. Attempting to set it.")
+        gen_method.device = device
+
     print(f"Using device: {device}")
 
     # ── Result Saver ─────────────────────────────────────────────────────────────
@@ -76,7 +114,7 @@ def main(use_cuda: bool, seed_text: str, max_length: int):
     # ── Setting / Runner ─────────────────────────────────────────────────────────
     print("Initializing text‐generation setting…")
     setting = Setting_RNN_TextGeneration("RNNTextGenExperiment", "Train + generate text with RNN")
-    # .prepare takes: dataset, method, result_saver, (and evaluator—but text‐gen doesn’t use one)
+    # .prepare takes: dataset, method, result_saver, (and evaluator—but text‐gen doesn't use one)
     setting.prepare(gen_data, gen_method, saver, None)
 
     # ── Run train + generate ─────────────────────────────────────────────────────

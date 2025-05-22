@@ -15,7 +15,7 @@ from sklearn.metrics import precision_score, recall_score, f1_score
 
 class Method_CNN(method, nn.Module):
     data = None
-    max_epoch = 50 # CNNs can be slower; adjust as needed
+    max_epoch = 70 # Updated to 70 epochs
     learning_rate = 1e-3
     
     # CNN specific parameters, to be set during __init__
@@ -30,6 +30,9 @@ class Method_CNN(method, nn.Module):
 
     def __init__(self, mName: str, mDescription: str, 
                  input_channels: int, num_classes: int, image_size: tuple, # (height, width)
+                 conv_channels: tuple = (16, 32), # Default to original, Arch 2 will use (32, 64)
+                 fc_hidden_size: int = 128,       # Default to original, Arch 2 will use 256
+                 kernel_size: int = 3,            # Assuming 3x3 kernels for Arch 2
                  optimizer_cls=torch.optim.Adam, loss_fn=None):
         method.__init__(self, mName, mDescription)
         nn.Module.__init__(self)
@@ -45,27 +48,29 @@ class Method_CNN(method, nn.Module):
         self.train_losses = []
         self.train_acc_epochs = []
 
-        # Example CNN Architecture: Adjust based on your dataset (MNIST, CIFAR, ORL)
+        # Dynamic CNN Architecture
+        padding = kernel_size // 2 # for 'same' padding with stride 1
 
-        self.conv1 = nn.Conv2d(self.input_channels, 16, kernel_size=3, stride=1, padding=1)
+        self.conv1 = nn.Conv2d(self.input_channels, conv_channels[0], kernel_size=kernel_size, stride=1, padding=padding)
         self.relu1 = nn.ReLU()
         self.pool1 = nn.MaxPool2d(kernel_size=2, stride=2) # Halves H, W
 
-        self.conv2 = nn.Conv2d(16, 32, kernel_size=3, stride=1, padding=1)
+        self.conv2 = nn.Conv2d(conv_channels[0], conv_channels[1], kernel_size=kernel_size, stride=1, padding=padding)
         self.relu2 = nn.ReLU()
         self.pool2 = nn.MaxPool2d(kernel_size=2, stride=2) # Halves H, W again
 
         # Calculate the flattened size after conv and pool layers dynamically
-        conv_output_h = self.image_h // 4
-        conv_output_w = self.image_w // 4
-        # Handle cases where image dimensions are not perfectly divisible by 4
+        conv_output_h = self.image_h // 4 # Assuming 2 pooling layers with stride 2
+        conv_output_w = self.image_w // 4 # Assuming 2 pooling layers with stride 2
+        
         if conv_output_h == 0 or conv_output_w == 0:
             raise ValueError(f"Image dimensions ({self.image_h}x{self.image_w}) too small for 2 pooling layers.")
-        self.flattened_size = 32 * conv_output_h * conv_output_w
         
-        self.fc1 = nn.Linear(self.flattened_size, 128)
+        self.flattened_size = conv_channels[1] * conv_output_h * conv_output_w # Use the output channels of the last conv layer
+        
+        self.fc1 = nn.Linear(self.flattened_size, fc_hidden_size)
         self.relu3 = nn.ReLU()
-        self.fc2 = nn.Linear(128, self.num_classes)
+        self.fc2 = nn.Linear(fc_hidden_size, self.num_classes)
         # CrossEntropyLoss combines LogSoftmax and NLLLoss, so no final activation here.
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:

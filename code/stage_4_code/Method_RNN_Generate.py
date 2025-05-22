@@ -50,8 +50,13 @@ class Method_RNN_Generate(Method_RNN):
         )
         object.__setattr__(self, 'mName', mName)
         object.__setattr__(self, 'mDescription', mDescription)
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.to(self.device)
+        # self.device = torch.device(\"cuda\" if torch.cuda.is_available() else \"cpu\") # Removed: Device will be set by .to() or externally
+        # self.to(self.device) # Removed: .to() will be called from the main script
+        
+        # The self.device attribute will be set when .to(device) is called on the instance.
+        # Initialize it to None or a default, and it will be updated.
+        self.device = None 
+
         # override num_classes for generation
         self.loss_fn = loss_fn or nn.CrossEntropyLoss(ignore_index=pad_idx)
 
@@ -70,6 +75,13 @@ class Method_RNN_Generate(Method_RNN):
 
     def train_model(self, X: torch.LongTensor, Y: torch.LongTensor, batch_size: int = 64):
         """Train with teacher forcing on next-token prediction."""
+        # Ensure self.device is set correctly (should be by the main script calling .to(device) and setting gen_method.device)
+        if self.device is None:
+            # Fallback or error if device wasn't set, though it should have been.
+            print("Warning: self.device is None in train_model. Defaulting to CPU. This might be incorrect.")
+            self.device = torch.device("cpu")
+            # Or raise an error: raise RuntimeError("Device not set for Method_RNN_Generate before training.")
+
         dataset = TensorDataset(X, Y)
         loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, drop_last=True)
         optimizer = self.optimizer_cls(self.parameters(), **self.optimizer_kwargs)
@@ -104,6 +116,11 @@ class Method_RNN_Generate(Method_RNN):
 
         with torch.no_grad():
             for _ in range(gen_length):
+                # Ensure device is correctly set for generation inputs as well
+                if self.device is None:
+                    print("Warning: self.device is None in generate. Defaulting to CPU.")
+                    self.device = torch.device("cpu")
+
                 inp = torch.LongTensor([seq]).to(self.device)       # (1, len(seq))
                 embedded = self.embedding(inp)                       # (1, L, E)
                 embedded = self.embed_dropout(embedded)
