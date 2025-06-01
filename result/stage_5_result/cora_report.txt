@@ -1,0 +1,24 @@
+GCN Performance Report - CORA Dataset
+==================================================
+
+Dataset: cora
+Method: Graph Convolutional Network (GCN)
+
+Final Results:
+Test Accuracy: 0.8150
+
+Training Summary:
+Total Epochs: 33
+Final Train Loss: 0.1927
+Final Train Accuracy: 0.9714
+Final Validation Loss: 0.7191
+Final Validation Accuracy: 0.8100
+
+Best Validation Accuracy: 0.8333
+Best Training Accuracy: 0.9714
+
+Model Configuration:
+Hidden Dimensions: 16
+Dropout Rate: 0.5
+Learning Rate: 0.01
+Weight Decay: 0.0005

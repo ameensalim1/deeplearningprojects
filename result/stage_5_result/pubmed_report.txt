@@ -1,0 +1,24 @@
+GCN Performance Report - PUBMED Dataset
+==================================================
+
+Dataset: pubmed
+Method: Graph Convolutional Network (GCN)
+
+Final Results:
+Test Accuracy: 0.7710
+
+Training Summary:
+Total Epochs: 32
+Final Train Loss: 0.6375
+Final Train Accuracy: 0.8167
+Final Validation Loss: 0.7793
+Final Validation Accuracy: 0.7700
+
+Best Validation Accuracy: 0.7800
+Best Training Accuracy: 0.9167
+
+Model Configuration:
+Hidden Dimensions: 16
+Dropout Rate: 0.5
+Learning Rate: 0.01
+Weight Decay: 0.0005

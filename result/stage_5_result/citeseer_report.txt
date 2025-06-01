@@ -1,0 +1,24 @@
+GCN Performance Report - CITESEER Dataset
+==================================================
+
+Dataset: citeseer
+Method: Graph Convolutional Network (GCN)
+
+Final Results:
+Test Accuracy: 0.6560
+
+Training Summary:
+Total Epochs: 50
+Final Train Loss: 0.0649
+Final Train Accuracy: 1.0000
+Final Validation Loss: 1.9993
+Final Validation Accuracy: 0.4133
+
+Best Validation Accuracy: 0.4233
+Best Training Accuracy: 1.0000
+
+Model Configuration:
+Hidden Dimensions: 16
+Dropout Rate: 0.5
+Learning Rate: 0.01
+Weight Decay: 0.0005
