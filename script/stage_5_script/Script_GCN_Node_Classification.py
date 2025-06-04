@@ -32,7 +32,7 @@ def run_gcn_experiment(dataset_name):
     # ---- Step 1: Setup Dataset ----
     data = Dataset_Loader()
     data.dataset_name = dataset_name
-    data.dataset_source_folder_path = f'data/stage_5_data/stage_5_data/{dataset_name}'
+    data.dataset_source_folder_path = f'data/stage_5_data/{dataset_name}'
     data.dataset_source_file_name = dataset_name
     data.dataset_description = f'{dataset_name} node classification dataset'
 
@@ -61,12 +61,15 @@ def run_gcn_experiment(dataset_name):
     setting.print_setup_summary()
     
     # ---- Step 8: Run Experiment ----
-    accuracy, detailed_results = setting.load_run_save_evaluate()
-    
+    metrics, detailed_results = setting.load_run_save_evaluate()
+
     print(f"\nExperiment completed for {dataset_name.upper()}")
-    print(f"Final Test Accuracy: {accuracy:.4f}")
-    
-    return accuracy, detailed_results
+    print(f"  - Accuracy:  {metrics['accuracy']:.4f}")
+    print(f"  - Precision: {metrics['precision']:.4f}")
+    print(f"  - Recall:    {metrics['recall']:.4f}")
+    print(f"  - F1 Score:  {metrics['f1_score']:.4f}")
+
+    return metrics, detailed_results
 
 
 def main():
@@ -83,9 +86,12 @@ def main():
     # Run experiments on all datasets
     for dataset_name in datasets:
         try:
-            accuracy, detailed_results = run_gcn_experiment(dataset_name)
+            metrics, detailed_results = run_gcn_experiment(dataset_name)
             results_summary[dataset_name] = {
-                'accuracy': accuracy,
+                'accuracy': metrics['accuracy'],
+                'precision': metrics['precision'],
+                'recall': metrics['recall'],
+                'f1_score': metrics['f1_score'],
                 'test_accuracy': detailed_results['test_accuracy'],
                 'epochs': len(detailed_results['train_losses'])
             }

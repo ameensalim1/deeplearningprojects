@@ -5,17 +5,21 @@ Dataset: pubmed
 Method: Graph Convolutional Network (GCN)
 
 Final Results:
-Test Accuracy: 0.7710
+Test Accuracy: 0.7770
+
+Test Precision: 0.7723
+Test Recall   : 0.7830
+Test F1-score : 0.7746
 
 Training Summary:
-Total Epochs: 32
-Final Train Loss: 0.6375
-Final Train Accuracy: 0.8167
-Final Validation Loss: 0.7793
-Final Validation Accuracy: 0.7700
+Total Epochs: 54
+Final Train Loss: 0.3435
+Final Train Accuracy: 0.9500
+Final Validation Loss: 0.6495
+Final Validation Accuracy: 0.7733
 
 Best Validation Accuracy: 0.7800
-Best Training Accuracy: 0.9167
+Best Training Accuracy: 0.9667
 
 Model Configuration:
 Hidden Dimensions: 16

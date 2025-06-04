@@ -7,7 +7,7 @@ Concrete SettingModule class for Graph Node Classification
 
 import os
 from code.base_class.setting import setting
-
+from sklearn.metrics import precision_score, recall_score, f1_score
 
 class Setting_Graph_Node_Classification(setting):
     """
@@ -52,10 +52,15 @@ class Setting_Graph_Node_Classification(setting):
             'pred_y': learned_result['pred_y']
         }
         
-        accuracy = self.evaluate.evaluate()
-        print(f"Final test accuracy for {self.dataset_name}: {accuracy:.4f}")
+        metrics = self.evaluate.evaluate()
+        print(f"Final results for {self.dataset_name}: "
+                f"accuracy={metrics['accuracy']:.4f}, "
+                f"precision={metrics['precision']:.4f}, "
+                f"recall={metrics['recall']:.4f}, "
+                f"f1={metrics['f1_score']:.4f}")
+
         
-        return accuracy, learned_result
+        return metrics, learned_result
 
     def save_detailed_report(self, result):
         """
@@ -75,6 +80,15 @@ class Setting_Graph_Node_Classification(setting):
             
             f.write("Final Results:\n")
             f.write(f"Test Accuracy: {result['test_accuracy']:.4f}\n\n")
+
+            y_true = result['true_y']
+            y_pred = result['pred_y']
+            prec = precision_score(y_true, y_pred, average='macro', zero_division=0)
+            rec  = recall_score(y_true, y_pred, average='macro', zero_division=0)
+            f1   = f1_score(y_true, y_pred, average='macro', zero_division=0)
+            f.write(f"Test Precision: {prec:.4f}\n")
+            f.write(f"Test Recall   : {rec:.4f}\n")
+            f.write(f"Test F1-score : {f1:.4f}\n\n")
             
             f.write("Training Summary:\n")
             f.write(f"Total Epochs: {len(result['train_losses'])}\n")

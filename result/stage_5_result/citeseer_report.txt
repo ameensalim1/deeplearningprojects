@@ -5,16 +5,20 @@ Dataset: citeseer
 Method: Graph Convolutional Network (GCN)
 
 Final Results:
-Test Accuracy: 0.6560
+Test Accuracy: 0.6570
+
+Test Precision: 0.6099
+Test Recall   : 0.4703
+Test F1-score : 0.4706
 
 Training Summary:
-Total Epochs: 50
-Final Train Loss: 0.0649
-Final Train Accuracy: 1.0000
-Final Validation Loss: 1.9993
-Final Validation Accuracy: 0.4133
+Total Epochs: 43
+Final Train Loss: 0.0364
+Final Train Accuracy: 0.9917
+Final Validation Loss: 1.7176
+Final Validation Accuracy: 0.4333
 
-Best Validation Accuracy: 0.4233
+Best Validation Accuracy: 0.4433
 Best Training Accuracy: 1.0000
 
 Model Configuration:
